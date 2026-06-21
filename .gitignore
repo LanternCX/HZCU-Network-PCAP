@@ -1,0 +1,15 @@
+*.doc
+*.docx
+.env
+.venv/
+.uv-cache/
+.pnpm-store/
+.serena/
+__pycache__/
+**/__pycache__/
+data/
+node_modules/
+src/frontend/node_modules/
+src/frontend/dist/
+*.pcap
+*.pcapng

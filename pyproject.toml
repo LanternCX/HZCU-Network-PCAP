@@ -1,0 +1,19 @@
+[project]
+name = "hzcu-network-pcap"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+  "flask>=3.0.0",
+  "litellm>=1.72.0",
+  "loguru>=0.7.0",
+  "pyshark>=0.6",
+  "rich>=13.0.0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
