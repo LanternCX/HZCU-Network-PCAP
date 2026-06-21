@@ -1,6 +1,5 @@
 <template>
-  <section v-if="capture">
-    <RouterLink to="/captures">Back to Captures</RouterLink>
+  <section v-if="capture" class="fit-page">
     <div class="page-head">
       <div>
         <h1>{{ capture.original_name }}</h1>
@@ -12,20 +11,23 @@
         <button class="danger" @click="remove">Delete</button>
       </div>
     </div>
-    <nav class="tabs" aria-label="Capture detail tabs">
-      <RouterLink :to="tabLink('overview')" :class="{ active: tab === 'overview' }">Overview</RouterLink>
-      <RouterLink :to="tabLink('packets')" :class="{ active: tab === 'packets' }">Packets</RouterLink>
-      <RouterLink :to="tabLink('ai')" :class="{ active: tab === 'ai' }">AI Analysis</RouterLink>
-    </nav>
-    <OverviewTab v-if="tab === 'overview'" :capture="capture" />
-    <PacketsTab v-if="tab === 'packets'" :capture-id="capture.id" />
-    <AiTab v-if="tab === 'ai'" :capture="capture" />
+    <div class="capture-workbench">
+      <section class="pane overview-pane">
+        <OverviewTab :capture="capture" />
+      </section>
+      <section class="pane packets-pane">
+        <PacketsTab :capture-id="capture.id" />
+      </section>
+      <section class="pane ai-pane">
+        <AiTab :capture="capture" />
+      </section>
+    </div>
   </section>
   <div v-else class="empty">Loading capture...</div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { api } from "../api/client";
 import OverviewTab from "../components/captures/OverviewTab.vue";
@@ -35,9 +37,7 @@ import AiTab from "../components/ai/AiTab.vue";
 const route = useRoute();
 const router = useRouter();
 const capture = ref<any>();
-const tab = computed(() => String(route.query.tab || "overview"));
 const load = async () => { capture.value = await api.capture(String(route.params.id)); };
-const tabLink = (name: string) => `/captures/${route.params.id}?tab=${name}`;
 const remove = async () => {
   if (capture.value && confirm("Delete capture?")) {
     await api.remove(capture.value.id);

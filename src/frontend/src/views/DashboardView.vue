@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="dashboard-page">
     <div class="page-head">
       <div>
         <h1>Dashboard</h1>
@@ -12,14 +12,16 @@
     </div>
 
     <div v-if="!captures.length" class="empty">No captures yet. Upload a PCAP or PCAPNG file to start analysis.</div>
-    <div class="grid" v-else>
-      <article class="card span-3"><p>Total Captures</p><strong>{{ stats.summary.total_captures }}</strong></article>
-      <article class="card span-3"><p>Total Packets</p><strong class="mono">{{ stats.summary.total_packets }}</strong></article>
-      <article class="card span-3"><p>Total Size</p><strong>{{ size(stats.summary.total_size) }}</strong></article>
-      <article class="card span-3"><p>Completed</p><strong>{{ stats.summary.completed }}</strong></article>
-      <article class="card span-3"><p>Failed/Alerts</p><strong>{{ stats.summary.failed }}</strong></article>
+    <div class="dashboard-grid" v-else>
+      <div class="metric-strip">
+        <article class="card"><p>Total Captures</p><strong>{{ stats.summary.total_captures }}</strong></article>
+        <article class="card"><p>Total Packets</p><strong class="mono">{{ stats.summary.total_packets }}</strong></article>
+        <article class="card"><p>Total Size</p><strong>{{ size(stats.summary.total_size) }}</strong></article>
+        <article class="card"><p>Completed</p><strong>{{ stats.summary.completed }}</strong></article>
+        <article class="card"><p>Failed/Alerts</p><strong>{{ stats.summary.failed }}</strong></article>
+      </div>
 
-      <section class="table-panel span-6">
+      <section class="table-panel recent-captures">
         <table>
           <thead><tr><th>Recent Captures</th><th>Uploaded At</th><th>Packets</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody>
@@ -28,23 +30,23 @@
               <td>{{ capture.uploaded_at }}</td>
               <td class="mono">{{ capture.packet_count }}</td>
               <td><span class="status" :class="capture.status">{{ capture.status }}</span></td>
-              <td><RouterLink class="btn" :to="`/captures/${capture.id}?tab=ai`">AI Analysis</RouterLink></td>
+              <td><RouterLink class="btn" :to="`/captures/${capture.id}`">Open</RouterLink></td>
             </tr>
           </tbody>
         </table>
       </section>
 
-      <EChartPanel class="span-6" title="Protocol Distribution" :summary="protocolSummary" :option="protocolChart" />
-      <EChartPanel class="span-12" title="Traffic Trend" :summary="trendSummary" :option="trendChart">
+      <EChartPanel class="protocol-chart" title="Protocol Distribution" :summary="protocolSummary" :option="protocolChart" />
+      <EChartPanel class="trend-chart" title="Traffic Trend" :summary="trendSummary" :option="trendChart">
         <select v-model="metric" aria-label="Metric"><option>Packets</option><option>Bytes</option></select>
         <select v-model="interval" aria-label="Interval"><option>1 second</option><option>10 seconds</option><option>1 minute</option></select>
         <select v-model="protocol" aria-label="Protocol filter"><option value="">All protocols</option><option v-for="row in stats.protocols" :key="row[0]">{{ row[0] }}</option></select>
       </EChartPanel>
 
-      <section class="panel span-4"><h2>Top Source IPs</h2><p v-for="row in stats.top_sources" :key="row[0]" class="mono">{{ row[0] }} · {{ row[1] }}</p></section>
-      <section class="panel span-4"><h2>Top Destination IPs</h2><p v-for="row in stats.top_destinations" :key="row[0]" class="mono">{{ row[0] }} · {{ row[1] }}</p></section>
-      <section class="panel span-4"><h2>Top Destination Ports</h2><p v-for="row in stats.top_ports" :key="row[0]" class="mono">{{ row[0] }} · {{ row[1] }}</p></section>
-      <EChartPanel class="span-12" title="Packet Size Distribution" :summary="sizeSummary" :option="sizeChart" />
+      <section class="panel top-list"><h2>Top Source IPs</h2><p v-for="row in stats.top_sources" :key="row[0]" class="mono">{{ row[0] }} · {{ row[1] }}</p></section>
+      <section class="panel top-list"><h2>Top Destination IPs</h2><p v-for="row in stats.top_destinations" :key="row[0]" class="mono">{{ row[0] }} · {{ row[1] }}</p></section>
+      <section class="panel top-list"><h2>Top Destination Ports</h2><p v-for="row in stats.top_ports" :key="row[0]" class="mono">{{ row[0] }} · {{ row[1] }}</p></section>
+      <EChartPanel class="size-chart" title="Packet Size Distribution" :summary="sizeSummary" :option="sizeChart" />
     </div>
   </section>
 </template>
@@ -74,15 +76,18 @@ const protocolSummary = computed(() => `${stats.value.protocols.length} protocol
 const trendSummary = computed(() => `${trendRows.value.length} ${interval.value} buckets show ${metric.value.toLowerCase()} activity.`);
 const sizeSummary = computed(() => `${stats.value.packet_sizes.length} packet size buckets are represented.`);
 const protocolChart = computed(() => ({
+  color: ["#006bff", "#00a6a6", "#f59e0b", "#64748b"],
   tooltip: {},
   series: [{ type: "pie", radius: ["48%", "76%"], data: stats.value.protocols.map(([name, value]: any[]) => ({ name, value })) }],
 }));
 const trendChart = computed(() => ({
+  color: ["#006bff"],
   xAxis: { type: "category", data: trendRows.value.map(([name]: any[]) => name.slice(11, 19)) },
   yAxis: { type: "value" },
   series: [{ type: "line", smooth: true, areaStyle: {}, data: trendRows.value.map(([, value]: any[]) => value) }],
 }));
 const sizeChart = computed(() => ({
+  color: ["#006bff"],
   xAxis: { type: "category", data: stats.value.packet_sizes.map(([name]: any[]) => name) },
   yAxis: { type: "value" },
   series: [{ type: "bar", data: stats.value.packet_sizes.map(([, value]: any[]) => value) }],

@@ -22,6 +22,7 @@ let chart: echarts.ECharts | undefined;
 const draw = () => {
   if (!el.value) return;
   chart ||= echarts.init(el.value);
+  chart.resize();
   chart.setOption(props.option);
 };
 

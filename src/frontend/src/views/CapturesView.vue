@@ -35,7 +35,6 @@
             <td><span class="status" :class="capture.status">{{ capture.status }}</span></td>
             <td class="toolbar">
               <RouterLink class="btn" :to="`/captures/${capture.id}`">Open</RouterLink>
-              <RouterLink class="btn" :to="`/captures/${capture.id}?tab=ai`">AI Analysis</RouterLink>
               <a class="btn" :href="`/api/captures/${capture.id}/download`">Download</a>
               <button @click="retry(capture.id)">Retry Analysis</button>
               <button class="danger" @click="remove(capture.id)">Delete</button>
