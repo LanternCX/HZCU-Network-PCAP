@@ -4,11 +4,21 @@ Network Capture Analyzer is a local web app for uploading PCAP/PCAPNG files, par
 
 ## Features
 
+![img1](docs/img/1.jpg)
+
+![img2](docs/img/2.jpg)
+
 - Upload and analyze `.pcap` and `.pcapng` files.
 - Browse packets with filters for IPs, ports, protocol, and text search.
 - View protocol distribution, traffic trends, top endpoints, and packet sizes.
 - Generate AI summaries with saved results in SQLite.
 - Keep AI API keys on the backend; keys are not returned to the frontend.
+
+## Docs
+
+[DESIGN.md](DESIGN.md) and [REFERENCE.md](REFERENCE.md)
+
+PRD: [docs/superpowers/specs](./docs/superpowers/specs)
 
 ## Requirements
 
