@@ -4,7 +4,6 @@
 .venv/
 .uv-cache/
 .pnpm-store/
-.serena/
 __pycache__/
 **/__pycache__/
 data/
